@@ -1,1 +1,1 @@
-web: uwsgi --http :5000 --wsgi-file machineShop.py --callable app --master -b 6500
+web: uwsgi --http-socket --wsgi-file machineShop.py --callable app --master -b 6500
