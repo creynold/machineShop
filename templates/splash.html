@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="textbox">
+<center>
+{% filter markdown %}
+##You've reached the LASSP Machine Shop Scheduler 
+
+---
+
+##Please <a href = "{{ url_for('login') }}">log in</a> if you have access to the machine shop 
+{% endfilter %}
+</center>
+</div>
+{% endblock %}

@@ -1,0 +1,292 @@
+{% extends "layout.html" %}
+
+{% block extraheader %}
+<button type="button" id="addtime">add/remove</button>
+{% if looking %}
+<button type="button" id="buddynow">don't need buddy now</button>
+{% else %}
+<button type="button" id="buddynow">need buddy now</button>
+{% endif %}
+<button type="button" id="clrSel">clear selected</button>
+<button type="button" id="selReg">select all registered</button>
+{% if admin %}
+<button type="button" id="adminPage">admin</button>
+{% endif %}
+{% endblock %}
+
+{% block body %}
+<script src = "{{ url_for('static',filename='jquery-1.8.3.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+        var timesSelected = new Array();
+        var timesRemove = new Array();
+	var startCell = null;
+	var endCell = null;
+	var box = new Array();
+	var needbuddy = ('{{ looking }}' == 'True')||('{{ looking }}' == '1');
+	box[0] = 0;
+	box[1] = 0;
+	box[2] = 0;
+	box[3] = 0;
+
+	$("div.box").hide();
+
+	$(document).mousemove(function(e) {
+		if ($.browser.msie && !(document.documentMode >= 9) && !event.button) {
+			startCell = null;
+			endCell = null;
+        	}
+
+		if(e.which == 1 && startCell == null) 
+		{
+			e.which = 0;
+			startCell = null;
+			endCell = null;
+		}
+		box[2] = e.pageX;
+		box[3] = e.pageY;
+		var w = Math.abs(box[2]-box[0]);
+		var h = Math.abs(box[3]-box[1]);
+		$("div.box").css('left',Math.min(box[0],box[2]));
+		$("div.box").css('top',Math.min(box[1],box[3]));
+		$("div.box").css('width',w+"px");
+		$("div.box").css('height',h+"px");
+		
+	});
+
+        $("td.timeslot").mousedown(function(e) {
+		e.preventDefault();
+		if(startCell == null && e.which == 1) 
+		{
+			startCell = $(this).get(0).id;
+			box[0] = e.pageX;
+			box[1] = e.pageY;
+			$("div.box").css('left',box[0]+"px");
+			$("div.box").css('top',box[1]+"px");
+			$("div.box").css('width',0);
+			$("div.box").css('height',0);
+			$("div.box").show();
+		}
+		else
+		{
+			startCell = null;
+		}
+		endCell = startCell;
+        });
+
+	$("div.box").mouseup(function(e) {
+		$("div.box").hide();
+		endCell = document.elementFromPoint(e.clientX, e.clientY).id;
+		drawCells();
+	});
+
+	function clearSelected() {
+		for(var i = 0; i < 7; i++)
+		{
+			for(var j = 0; j < 24; j++)
+			{
+				var tmpStr = "td#"+i.toString()+"-"+j.toString();
+
+				if($(tmpStr).hasClass('selected'))
+				{
+					$(tmpStr).removeClass('selected');
+				}
+				else if($(tmpStr).hasClass('unregister'))
+				{
+					$(tmpStr).removeClass('unregister');
+					$(tmpStr).addClass('mine');
+				}
+			}
+		}
+	}
+
+	$("#adminPage").click(function() {
+		window.location = '{{ url_for('admin') }}';
+	});
+
+	$("button#clrSel").click(function() {
+		clearSelected();
+	});
+
+	$("html").keydown(function(e) {
+		if(e.which == 46) {
+			deleteCells();
+			clearSelected();
+		}
+		else if(e.which == 13) {
+			addCells();
+			clearSelected();
+		}
+		else if(e.which == 27) {
+			clearSelected();
+		}
+	});
+
+	function addCells() {
+		var numAdded = 0;
+
+		for (var i = 0; i < 7; i++)
+		{
+			for (var j = 0; j < 24; j++)
+			{
+				var tmpStr = "td#"+i.toString()+"-"+j.toString();
+				if($(tmpStr).hasClass('selected'))
+				{
+					timesSelected[timesSelected.length] = $(tmpStr).get(0).id;
+					$(tmpStr).removeClass('selected');
+					$(tmpStr).addClass('mine');
+					$(tmpStr).attr('title','{{ fullname }}');
+					numAdded++;
+				}
+			}
+		}
+		if(numAdded > 0)
+		{
+			$.post('/saveTimes', {time:timesSelected.toString(),remove:""}, function(data){
+			});
+        		timesSelected = new Array();
+		}
+	}
+
+	function deleteCells() {
+		var numRemoved = 0;
+
+		for (var i = 0; i < 7; i++)
+		{
+			for (var j = 0; j < 24; j++)
+			{
+				var tmpStr = "td#"+i.toString()+"-"+j.toString();
+				if($(tmpStr).hasClass('unregister'))
+				{
+					timesRemove[timesRemove.length] = $(tmpStr).get(0).id;
+					$(tmpStr).removeClass('unregister');
+					$(tmpStr).attr('title','');
+					numRemoved++;
+				}
+			}
+		}
+
+		if(numRemoved > 0)
+		{
+			$.post('/saveTimes', {time:"",remove:timesRemove.toString()}, function(data){
+			});
+        		timesRemove = new Array();
+		}
+	}
+
+	$("button#selReg").click(function() {
+		for(var i = 0; i < 7; i++)
+		{
+			for(var j = 0; j < 24; j++)
+			{
+				var tmpStr = "td#"+i.toString()+"-"+j.toString();
+
+				if($(tmpStr).hasClass('mine'))
+				{
+					$(tmpStr).removeClass('mine');
+					$(tmpStr).addClass('unregister');
+				}
+			}
+		}
+	});
+
+	function drawCells()
+	{
+		
+		if(startCell != null) 
+		{
+			var startX = Math.min(parseInt(startCell.substr(0,1)),parseInt(endCell.substr(0,1)));
+			var startY = Math.min(parseInt(startCell.substr(2,2)),parseInt(endCell.substr(2,2)));
+			var endX = Math.max(parseInt(startCell.substr(0,1)),parseInt(endCell.substr(0,1)));
+			var endY = Math.max(parseInt(startCell.substr(2,2)),parseInt(endCell.substr(2,2)));
+			for(var i = startX; i <= endX; i++)
+			{
+				for(var j = startY; j <= endY; j++)
+				{
+					var tmpStr = "td#"+i.toString()+"-"+j.toString();
+
+					if($(tmpStr).hasClass('selected'))
+					{
+						$(tmpStr).removeClass('selected');
+					}
+					else if($(tmpStr).hasClass('mine'))
+					{
+						$(tmpStr).addClass('unregister');
+						$(tmpStr).removeClass('mine');
+					}
+					else if($(tmpStr).hasClass('unregister'))
+					{
+						$(tmpStr).addClass('mine');
+						$(tmpStr).removeClass('unregister');
+					}
+					else
+					{
+						$(tmpStr).addClass('selected');
+					}
+				}
+			}
+		}
+		startCell = null;
+		endCell = null;
+	}
+
+        $("td.timeslot").mouseover(function(e) {
+		if(startCell != null && e.which == 1) 
+		{
+			e.preventDefault();
+			endCell = $(this).get(0).id;
+		}
+        });
+
+	$("#logout").click(function() {
+		window.location = '{{ url_for('logout') }}';
+	});
+
+	$("#buddynow").click(function() {
+		if ( !needbuddy ) {
+			$.post('/lookingnow',{todo:'looking'}, function(data){
+				$("header > button#buddynow").text(data);
+				needbuddy = !needbuddy;
+			});
+		}
+		else {
+			$.post('/lookingnow',{todo:'notlooking'}, function(data){
+				$("header > button#buddynow").text(data);
+				needbuddy = !needbuddy;
+			});
+		}
+	});
+
+        $("#addtime").click(function() {
+		addCells();
+		deleteCells();
+		clearSelected();
+        });
+});
+</script>
+<div class="cal">
+<table class="week">
+<tr><th colspan="8"></th></tr>
+<tr class="headrow">
+<td></td>
+{% for day in days %}
+<td style='text-align: center'> {{ day }} </td>
+{% endfor %}
+</tr>
+{% set i = 0 %}
+{% set j = 0 %}
+{% for hour in hours %}
+<tr class="slotrow">
+<td class="hours">{{hour}}</td>
+{% for day in days %}
+<td id='{{j}}-{{i}}' class='timeslot {% if j~'-'~i in times %}registered {% endif %}{% if j~'-'~i in mytimes %}mine{% endif %}' title='{% for name in times[j~'-'~i] %}{{ name }} {% endfor %}{% for name in mytimes[j~'-'~i] %}{{ name }} {% endfor %}'></td>
+{% set j = j + 1 %}
+{% endfor %}
+{% set i = i + 1 %}
+</tr>
+{% endfor %}
+</table>	
+</div>
+<div class="box">
+</div>
+{% endblock %}

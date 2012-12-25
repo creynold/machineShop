@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block extraheader %}
+<button type=submit form='textform'>save users</button>
+<button id="calendar">calendar</button>
+{% endblock %}
+
+{% block body %}
+<script src = "{{ url_for('static',filename='jquery-1.8.3.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+	$("#logout").click(function() {
+		window.location = '{{ url_for('logout') }}';
+	});
+
+	$("#calendar").click(function() {
+		window.location = '{{ url_for('calendar') }}';
+	});
+});
+</script>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+<form action='/saveusers' method='post' id='textform'>
+<textarea name='toadd' rows=20 cols=80>{{ currentlist }}</textarea>
+</form>
+<div class="textbox">
+{% filter markdown %}
+In order to add or remove users' access to the machine shop scheduler simply add or remove their email address to the text box above and hit the "save users" button.
+{% endfilter %}
+</div>
+{% endblock %}

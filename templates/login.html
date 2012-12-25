@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+<div class="textbox">
+{% filter markdown %}
+To login, click the button below. 
+
+You will be taken to the google login screen:
+
+- For username enter (your Cornell NetID)@cornell.edu
+- Your password is the one you would normally use to log into your cmail account
+- You may be asked to verify that this website may access your information: Click allow
+
+Note: this website does not have access to anything other than what google supplies it. For more information visit <a href="https://developers.google.com/accounts/docs/OpenID">https://developers.google.com/accounts/docs/OpenID</a>
+{% endfilter %}
+</div>
+  <form action="{{ url_for('login') }}" method=post id='loginform'>
+    <dl>
+      <dd><input type=hidden name=openid value=1>
+      <dd><input type=hidden name=next value="{{ next }}">
+      <dd><button type=submit>Login</button>
+    </dl>
+  </form>
+{% endblock %}

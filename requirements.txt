@@ -1,0 +1,14 @@
+Flask==0.9
+Flask-Mail==0.7.4
+Flask-Markdown==0.3
+Flask-OpenID==1.1.1
+Jinja2==2.6
+Markdown==2.2.1
+Werkzeug==0.8.3
+argparse==1.2.1
+blinker==1.2
+distribute==0.6.24
+gunicorn==0.16.1
+python-openid==2.2.5
+uWSGI==1.4.3
+wsgiref==0.1.2
