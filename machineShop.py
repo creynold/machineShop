@@ -39,6 +39,41 @@ mail = Mail(app)
 oid = OpenID(app,'/tmp')
 Markdown(app)
 
+class User(db.Model):
+   __tablename__ = 'users'
+   id = db.Column(db.Integer,primary_key=True)
+   email = db.Column(db.String(120),unique=True)
+   name = db.Column(db.String(120),unique=True)
+   looking = db.Column(db.Boolean)
+   is_admin = db.Column(db.Boolean)
+
+   def __init__(self, name=None, email=None, looking=False, is_admin=False):
+      self.name = name
+      self.email = email
+      self.looking = looking
+      self.is_admin = is_admin
+
+   def __repr__(self):
+      return '<User %r>' % (self.email)
+
+class TimeSlot(db.Model):
+   __tablename__ = 'schedule'
+   id = db.Column(db.Integer,primary_key=True)
+   email = db.Column(db.String(120))
+   day = db.Column(db.Integer)
+   hour = db.Column(db.Integer)
+
+   def __init__(self, email, day, hour):
+      self.email = email
+      self.day = day
+      self.hour = hour
+
+   def __repr__(self):
+      return '%d-%d' % (self.day,self.hour)
+
+   def __str__(self):
+      return '%d-%d' % (self.day,self.hour)
+
 #def connect_db():
 #   return sqlite3.connect(app.config['DATABASE'])
 
@@ -53,7 +88,7 @@ def add_admin():
 #   db = sqlite3.connect(app.config['DATABASE'])
 #   db.execute('insert into users (username,looking,is_admin) values (?, ?, ?)',['cmr289@cornell.edu',False,True])
 #   db.commit()
-   user = User('cmr289@cornell.edu','Collin Reynolds',False,True)
+   user = User('Collin Reynolds','cmr289@cornell.edu',False,True)
    db.session.add(user)
    db.session.commit()
    
@@ -121,16 +156,16 @@ def confirm():
       onSchedule = TimeSlot.query.filter(TimeSlot.hour == curHour,TimeSlot.day == 0).all()
 
       if len(onSchedule) == 1:
-         moveUser = User(None,onSchedule[0].email,True,False)
+         moveUser = User.query.filter(User.email == onSchedule[0].email).first()
          lookingUsers.append(moveUser)
-         db.session.add(moveUser)
+         moveUser.looking = True
          db.session.commit()
 
       if session.get('username') not in [x.email for x in lookingUsers]:
          flash('You are not currently looking for a buddy')
          return redirect(url_for('calendar'))
       if len(lookingUsers) > 1:
-         msg = Message('Machine shop buddy found!',recipients=[x for x in lookingUsers if x != session.get('username')])
+         msg = Message('Machine shop buddy found!',recipients=[x.email for x in lookingUsers if x.email != session.get('username')])
          msg.html = session.get('username')+' is available now! You will be now removed from the "currently looking" list and placed on the schedule.'
          mail.send(msg)
 
@@ -142,7 +177,8 @@ def confirm():
             #g.db.execute('update users set looking=? where username=?',[False,user])
             #g.db.execute('insert into schedule (username,time) values (?, ?)',[user,curtimeslot])
             user.looking = False
-            db.session.add(TimeSlot(user.email,0,curHour))
+            if TimeSlot.query.filter(TimeSlot.email == user.email, TimeSlot.day==0, TimeSlot.hour == curHour).first() != None:
+               db.session.add(TimeSlot(user.email,0,curHour))
          db.session.commit()
          #g.db.commit()
          session['looking'] = False
@@ -168,17 +204,17 @@ def lookingnow():
          #lookingUsers = [x['username'] for x in query_db('select username from users where looking=?',[True])]
          lookingUsers = User.query.filter(User.looking == True).all()
 
-         if len(onSchedule) == 1:
+         if len(onSchedule) == 1 and onSchedule[0].email != session.get('username'):
             #lookingUsers.append(onSchedule[0])
             lookingUsers.append(User(None,onSchedule[0].email,True,False))
 
          if len(lookingUsers) != 0:
-            msg = Message('Machine shop buddy needed',recipients=lookingUsers)
+            msg = Message('Machine shop buddy needed',recipients=[x.email for x in lookingUsers])
             msg.html = session.get('username')+' is looking for a buddy, and you have indicated you are looking as well. If you are available, please click <a href="'+url_for('confirm',_external=True)+'">here</a>'
             mail.send(msg)
 
       #g.db.execute('update users set looking=? where username=?',[setlooking,session.get('username')])
-      User.query.filter(email==session.get('username')).first().looking = setlooking
+      User.query.filter(User.email==session.get('username')).first().looking = setlooking
       db.session.commit()
       #g.db.commit()
       session['looking'] = setlooking
@@ -202,7 +238,7 @@ def login():
 @oid.after_login
 def oidlogin(resp):
    #if query_db('select username from users where username=?',[resp.email],one=True) == None:
-   currentUser = User.query.filter(email == resp.email).first()
+   currentUser = User.query.filter(User.email == resp.email).first()
    if currentUser == None:
       flash('Error: You do not have access to the scheduler, please email Nathan Ellis (nie1@cornell.edu) to be added')
       return redirect(url_for('logout'))
@@ -228,7 +264,7 @@ def saveusers():
             db.session.add(User(None,toadd,False,False))
       for toremove in userlist:
          if toremove not in textarea:
-            db.session.delete(User.query.filter(email==toremove).first())
+            db.session.delete(User.query.filter(User.email==toremove).first())
             #g.db.execute('delete from users where username=?',[toremove])
       db.session.commit()
       return redirect(url_for('admin'))
@@ -314,7 +350,7 @@ def saveTimes():
          onSchedule = [x.email for x in TimeSlot.query.filter(TimeSlot.day == addDay,TimeSlot.hour == addHour).all()]
          db.session.add(TimeSlot(session.get('username'),addDay,addHour))
          numadd += 1
-         if str(time.localtime().tm_hour) == str(addHour) and len(onSchedule) == 1:
+         if len(onSchedule) == 1 and !session.get('looking') and str(time.localtime().tm_hour) == str(addHour) and addDay == 0:
             msg = Message('Machine shop buddy found!',recipients=onSchedule)
             msg.html = session.get('username')+' is available now!'
             mail.send(msg)
@@ -330,7 +366,6 @@ def saveTimes():
    #return Response(response=query_db('select * from schedule where username = ?',[session.get('username')]))
 
 init_db()
-import machineShop.models
 add_admin()
 
 if __name__ == '__main__':
