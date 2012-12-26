@@ -2,13 +2,16 @@ Flask==0.9
 Flask-Mail==0.7.4
 Flask-Markdown==0.3
 Flask-OpenID==1.1.1
+Flask-SQLAlchemy==0.16
 Jinja2==2.6
 Markdown==2.2.1
+SQLAlchemy==0.8.0b2
 Werkzeug==0.8.3
 argparse==1.2.1
 blinker==1.2
 distribute==0.6.24
 gunicorn==0.16.1
+psycopg2==2.4.6
 python-openid==2.2.5
 uWSGI==1.4.3
 wsgiref==0.1.2
