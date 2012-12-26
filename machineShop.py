@@ -26,8 +26,8 @@ MAIL_SERVER = 'smtp.gmail.com'
 MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
-MAIL_USERNAME = ''
-MAIL_PASSWORD = ''
+MAIL_USERNAME = 'lasspgradmachineshop'
+MAIL_PASSWORD = 'let metal fly'
 DEFAULT_MAIL_SENDER = 'LASSP Graduate Machine Shop'
 MAIL_FAIL_SILENTLY = False
 
@@ -370,10 +370,10 @@ def saveTimes():
    return Response(response="Successfully added {0} times and removed {1} times".format(numadd,numremove))
    #return Response(response=query_db('select * from schedule where username = ?',[session.get('username')]))
 
-init_db()
-add_admin()
+#init_db()
+#add_admin()
 
 if __name__ == '__main__':
-   init_db()
-   add_admin()
+#   init_db()
+#   add_admin()
    app.run()
