@@ -206,9 +206,13 @@ def lookingnow():
 
          if len(onSchedule) == 1 and onSchedule[0].email != session.get('username'):
             #lookingUsers.append(onSchedule[0])
-            lookingUsers.append(User(None,onSchedule[0].email,True,False))
-
-         if len(lookingUsers) != 0:
+            tmpUsr = User.query.filter(User.email == onSchedule[0].email)
+            if not tmpUsr.looking:
+               tmpUsr.looking = False
+               db.session.commit()
+            lookingUsers.append(tmpUsr)
+            
+         if len(lookingUsers) != 0 and len(onSchedule) < 2:
             msg = Message('Machine shop buddy needed',recipients=[x.email for x in lookingUsers])
             msg.html = session.get('username')+' is looking for a buddy, and you have indicated you are looking as well. If you are available, please click <a href="'+url_for('confirm',_external=True)+'">here</a>'
             mail.send(msg)
@@ -350,7 +354,7 @@ def saveTimes():
          onSchedule = [x.email for x in TimeSlot.query.filter(TimeSlot.day == addDay,TimeSlot.hour == addHour).all()]
          db.session.add(TimeSlot(session.get('username'),addDay,addHour))
          numadd += 1
-         if len(onSchedule) == 1 and !session.get('looking') and str(time.localtime().tm_hour) == str(addHour) and addDay == 0:
+         if len(onSchedule) == 1 and not session.get('looking') and str(time.localtime().tm_hour) == str(addHour) and addDay == 0:
             msg = Message('Machine shop buddy found!',recipients=onSchedule)
             msg.html = session.get('username')+' is available now!'
             mail.send(msg)
