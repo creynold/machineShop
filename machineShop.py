@@ -26,8 +26,8 @@ MAIL_SERVER = 'smtp.gmail.com'
 MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
-MAIL_USERNAME = 'lasspgradmachineshop'
-MAIL_PASSWORD = 'let metal fly'
+MAIL_USERNAME = ''
+MAIL_PASSWORD = ''
 DEFAULT_MAIL_SENDER = 'LASSP Graduate Machine Shop'
 MAIL_FAIL_SILENTLY = False
 
