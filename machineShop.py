@@ -36,7 +36,7 @@ app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
 mail = Mail(app)
-oid = OpenID(app,'/tmp')
+oid = OpenID(app)
 Markdown(app)
 
 class User(db.Model):
