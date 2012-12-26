@@ -15,7 +15,8 @@ from flask_mail import Mail, Message
 from uwsgidecorators import *
 from flask_openid import OpenID
 from flask_openid import COMMON_PROVIDERS
-import time
+import time 
+import os
 
 # configuration
 #DATABASE = '/tmp/flaskr.db'
