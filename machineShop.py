@@ -88,9 +88,10 @@ def add_admin():
 #   db = sqlite3.connect(app.config['DATABASE'])
 #   db.execute('insert into users (username,looking,is_admin) values (?, ?, ?)',['cmr289@cornell.edu',False,True])
 #   db.commit()
-   user = User('Collin Reynolds','cmr289@cornell.edu',False,True)
-   db.session.add(user)
-   db.session.commit()
+   if User.query.filter(User.email == 'cmr289@cornell.edu').first() == None:
+      user = User('Collin Reynolds','cmr289@cornell.edu',False,True)
+      db.session.add(user)
+      db.session.commit()
    
 
 #def query_db(query, args=(), one=False):
