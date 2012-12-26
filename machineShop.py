@@ -5,7 +5,8 @@
 #   Date: December 24, 2012
 #
 ###########################################
-import sqlite3
+#import sqlite3
+from flask.ext.sqlalchemy import SQLAlchemy
 from flaskext.markdown import Markdown
 from contextlib import closing
 from flask import Flask, request, session, g, redirect, url_for, \
@@ -30,7 +31,9 @@ DEFAULT_MAIL_SENDER = 'LASSP Graduate Machine Shop'
 MAIL_FAIL_SILENTLY = False
 
 app = Flask(__name__)
-app.config.from_object(__name__)
+#app.config.from_object(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+db = SQLAlchemy(app)
 mail = Mail(app)
 oid = OpenID(app,'/tmp')
 Markdown(app)
