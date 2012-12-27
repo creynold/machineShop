@@ -167,7 +167,7 @@ def confirm():
          return redirect(url_for('calendar'))
       if len(lookingUsers) > 1:
          msg = Message('Machine shop buddy found!',recipients=[x.email for x in lookingUsers if x.email != session.get('username')])
-         msg.html = session.get('username')+' is available now! You will be now removed from the "currently looking" list and placed on the schedule.'
+         msg.html = session.get('username')+' is available now! You will now be removed from the "currently looking" list and placed on the schedule.'
          mail.send(msg)
 
          #g.db.execute('update users set looking=? where username=?',[False,session.get('username')])

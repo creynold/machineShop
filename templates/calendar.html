@@ -1,16 +1,17 @@
 {% extends "layout.html" %}
 
 {% block extraheader %}
-<button type="button" id="addtime">add/remove</button>
-{% if looking %}
-<button type="button" id="buddynow">don't need buddy now</button>
-{% else %}
-<button type="button" id="buddynow">need buddy now</button>
-{% endif %}
+<button type="button" id="addtime">add</button>
+<button type="button" id="removetime">remove</button>
 <button type="button" id="clrSel">clear selected</button>
-<button type="button" id="selReg">select all registered</button>
+<button type="button" id="selReg">select added</button>
+{% if looking %}
+<button type="button" id="buddynow" style="float:right">don't need buddy now</button>
+{% else %}
+<button type="button" id="buddynow" style="float:right">need buddy now</button>
+{% endif %}
 {% if admin %}
-<button type="button" id="adminPage">admin</button>
+<button type="button" id="adminPage" style="float:right">admin</button>
 {% endif %}
 {% endblock %}
 
@@ -243,6 +244,7 @@ $(document).ready(function() {
 	});
 
 	$("#buddynow").click(function() {
+		$(this).attr('disabled','disabled');
 		if ( !needbuddy ) {
 			$.post('/lookingnow',{todo:'looking'}, function(data){
 				$("header > button#buddynow").text(data);
@@ -255,10 +257,15 @@ $(document).ready(function() {
 				needbuddy = !needbuddy;
 			});
 		}
+		$("header > button#buddynow").removeAttr('disabled');
 	});
 
         $("#addtime").click(function() {
 		addCells();
+		clearSelected();
+        });
+
+        $("#removetime").click(function() {
 		deleteCells();
 		clearSelected();
         });
