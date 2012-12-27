@@ -19,16 +19,16 @@ import os
 
 # configuration
 DEBUG = True
-SECRET_KEY = 'q\xd0\xaex\x12\xbb\x18_\xea\xff\xe8W\x93\xd9\x08!\xf3N\x15\xfd\xc7\xe1\xce\x94'
+SECRET_KEY = os.environ['FLASK_SEC_KEY']
 
 #For Flask Mail
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
-MAIL_USERNAME = 'lasspgradmachineshop'
-MAIL_PASSWORD = 'let metal fly'
-DEFAULT_MAIL_SENDER = 'LASSP Graduate Machine Shop'
+MAIL_USERNAME = os.environ['GMAIL_USERNAME']
+MAIL_PASSWORD = os.environ['GMAIL_PASSWORD']
+DEFAULT_MAIL_SENDER = os.environ['GMAIL_NAME']
 MAIL_FAIL_SILENTLY = False
 
 #Configure everything
