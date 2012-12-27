@@ -5,13 +5,13 @@
 <button type="button" id="removetime">remove</button>
 <button type="button" id="clrSel">clear selected</button>
 <button type="button" id="selReg">select added</button>
+{% if admin %}
+<button type="button" id="adminPage">admin</button>
+{% endif %}
 {% if looking %}
 <button type="button" id="buddynow">don't need buddy now</button>
 {% else %}
 <button type="button" id="buddynow">need buddy now</button>
-{% endif %}
-{% if admin %}
-<button type="button" id="adminPage">admin</button>
 {% endif %}
 {% endblock %}
 
