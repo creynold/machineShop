@@ -99,11 +99,9 @@ def add_admin():
 # This function is called every minute. If midnight is encountered, all the days
 # are shifted back one.
 #######################
-@rbtimer(60)
+@cron(15,4,-1,-1,-1)
 def oneminute(num):
-   #if time.localtime().tm_hour == 0 and time.localtime().tm_min == 0:
    curSched = TimeSlot.query.all()
-   updSched = []
    for slot in curSched:
       if slot.day > 0:
          slot.day = slot.day - 1
