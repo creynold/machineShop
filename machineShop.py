@@ -96,10 +96,10 @@ def add_admin():
       db.session.add(user)
       db.session.commit()
    
-# This function is called every minute. If midnight is encountered, all the days
+# This function is called at midnight (local time, 5 AM heroku time). All the days
 # are shifted back one.
 #######################
-@cron(20,9,-1,-1,-1)
+@cron(0,5,-1,-1,-1)
 def oneminute(num):
    curSched = TimeSlot.query.all()
    for slot in curSched:
