@@ -25,6 +25,7 @@ $(document).ready(function() {
 	var endCell = null;
 	var box = new Array();
 	var needbuddy = ('{{ looking }}' == 'True')||('{{ looking }}' == '1');
+	var wait = 0;
 	box[0] = 0;
 	box[1] = 0;
 	box[2] = 0;
@@ -244,20 +245,22 @@ $(document).ready(function() {
 	});
 
 	$("#buddynow").click(function() {
-		$(this).attr('disabled','disabled');
-		if ( !needbuddy ) {
-			$.post('/lookingnow',{todo:'looking'}, function(data){
-				$("header > button#buddynow").text(data);
-				needbuddy = !needbuddy;
-			});
+		if ( !wait ) {
+			if ( !needbuddy ) {
+				$.post('/lookingnow',{todo:'looking'}, function(data){
+					$("header > button#buddynow").text(data);
+					needbuddy = !needbuddy;
+					wait = 0;
+				});
+			}
+			else {
+				$.post('/lookingnow',{todo:'notlooking'}, function(data){
+					$("header > button#buddynow").text(data);
+					needbuddy = !needbuddy;
+					wait = 0;
+				});
+			}
 		}
-		else {
-			$.post('/lookingnow',{todo:'notlooking'}, function(data){
-				$("header > button#buddynow").text(data);
-				needbuddy = !needbuddy;
-			});
-		}
-		$("header > button#buddynow").removeAttr('disabled');
 	});
 
         $("#addtime").click(function() {
