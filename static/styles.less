@@ -188,6 +188,25 @@ table {
 		background-color: darken(white,7%);
 	}
 
+	td.filled {
+		background-color: lighten(blue,5%);
+		&:hover{
+			background-color: lighten(blue,10%);
+		}
+		&.mine{
+			background-color: lighten(green,5%);
+			&:hover{
+				background-color: lighten(green,10%);
+			}
+		}
+		&.selected{
+			background-color: darken(yellow,5%);
+			&:hover{
+				background-color: lighten(yellow,0%);
+			}
+		}
+	}
+
 	td.registered {
 		background-color: lighten(blue,20%);
 		&:hover{
