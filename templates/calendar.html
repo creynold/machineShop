@@ -289,7 +289,7 @@ $(document).ready(function() {
 <tr class="slotrow">
 <td class="hours">{{hour}}</td>
 {% for day in days %}
-<td id='{{j}}-{{i}}' class='timeslot {% if j~'-'~i in times %}registered {% endif %}{% if j~'-'~i in mytimes %}mine{% endif %}' title='{% for name in times[j~'-'~i] %}{{ name }} {% endfor %}{% for name in mytimes[j~'-'~i] %}{{ name }} {% endfor %}'></td>
+<td id='{{j}}-{{i}}' class='timeslot {% if j~'-'~i in times %}{% if times[j~'-'~i]|length > 1 %}filled {% else %}registered {% endif %}{% endif %}{% if j~'-'~i in mytimes %}mine{% endif %}' title='{% for name in times[j~'-'~i] %}{{ name }} {% endfor %}{% for name in mytimes[j~'-'~i] %}{{ name }} {% endfor %}'></td>
 {% set j = j + 1 %}
 {% endfor %}
 {% set i = i + 1 %}
