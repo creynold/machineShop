@@ -118,7 +118,7 @@ def updateCalendar():
    curSched = TimeSlot.query.all()
    curTime = time.time()
    for slot in curSched:
-      if slot.updated - curTime >= 86400 :
+      if curTime - slot.updated >= 86400 :
          if slot.day > 0:
             slot.day = slot.day - 1
             slot.updated = curTime
