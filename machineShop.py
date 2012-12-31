@@ -73,17 +73,22 @@ class TimeSlot(db.Model):
    email = db.Column(db.String(120))
    day = db.Column(db.Integer)
    hour = db.Column(db.Integer)
+   updated = db.Column(db.Float)
 
-   def __init__(self, email, day, hour):
+   def __init__(self, email, day, hour, date):
       self.email = email
       self.day = day
       self.hour = hour
+      self.updated = date
 
    def __repr__(self):
       return '%d-%d' % (self.day,self.hour)
 
    def __str__(self):
       return '%d-%d' % (self.day,self.hour)
+
+def ithacaTime():
+   return time.gmtime(time.time()-5*3600)
 
 def init_db():
    db.create_all()
@@ -110,6 +115,18 @@ def oneminute(num):
    
    db.session.commit()
 
+def updateCalendar():
+   curSched = TimeSlot.query.all()
+   curTime = time.time()
+   for slot in curSched:
+      if slot.updated - curTime >= 86400 :
+         if slot.day > 0:
+            slot.day = slot.day - 1
+            slot.updated = curTime
+         else:
+            db.session.delete(slot)
+   db.session.commit()
+
 # Views
 #################################
 
@@ -127,7 +144,7 @@ def confirm():
    if not session.get('logged_in'):
       return redirect(url_for('login',next='confirm'))
    else:
-      curHour = time.localtime().tm_hour
+      curHour = ithacaTime.tm_hour
       lookingUsers = User.query.filter(User.looking == True).all()
       onSchedule = TimeSlot.query.filter(TimeSlot.hour == curHour,TimeSlot.day == 0).all()
 
@@ -153,7 +170,7 @@ def confirm():
          for user in lookingUsers:
             user.looking = False
             if TimeSlot.query.filter(TimeSlot.email == user.email, TimeSlot.day==0, TimeSlot.hour == curHour).first() != None:
-               db.session.add(TimeSlot(user.email,0,curHour))
+               db.session.add(TimeSlot(user.email,0,curHour,time.time()))
  
          # Write to database
          db.session.commit()
@@ -173,7 +190,7 @@ def lookingnow():
       setlooking = False
 
       if request.form.get('todo') == 'looking':
-         curHour = time.localtime().tm_hour
+         curHour = ithacaTime().tm_hour
          onSchedule = TimeSlot.query.filter(TimeSlot.hour == curHour, TimeSlot.day == 0).all()
 
          setlooking = True
@@ -210,6 +227,7 @@ def login():
 
    # If already logged in, then redirect to the calendar
    if session.get('logged_in'):
+      updateCalendar()
       return redirect(url_for('calendar'))
 
    error = None
@@ -239,6 +257,7 @@ def oidlogin(resp):
    session['looking'] = currentUser.looking
    session['is_admin'] = currentUser.is_admin
 
+   updateCalendar()
    return redirect(oid.get_next_url())
 
 # This function is used to add users to the database
@@ -336,7 +355,7 @@ def calendar():
 
    # Format the dates nicely
    for x in xrange(0,7):
-      days.append(time.strftime('%a %m/%d',time.localtime(time.time()+x*24*3600)))
+      days.append(time.strftime('%a %m/%d',time.gmtime(time.time()+x*24*3600-5*3600)))
 
    return render_template('calendar.html',days = days,hours = hours,times=times,mytimes=mytimes,fullname=session.get('username'),looking=session.get('looking'),admin=session.get('is_admin'))
 
@@ -365,11 +384,11 @@ def saveTimes():
          onSchedule = [x.email for x in TimeSlot.query.filter(TimeSlot.day == addDay,TimeSlot.hour == addHour).all()]
  
          # Add the current user to the schedule
-         db.session.add(TimeSlot(session.get('username'),addDay,addHour))
+         db.session.add(TimeSlot(session.get('username'),addDay,addHour,time.time()))
          numadd += 1
 
          # Check if there's someone else looking here if this slot is the current time
-         if len(onSchedule) == 1 and not session.get('looking') and str(time.localtime().tm_hour) == str(addHour) and addDay == 0:
+         if len(onSchedule) == 1 and not session.get('looking') and str(ithacaTime.tm_hour) == str(addHour) and addDay == 0:
             msg = Message('Machine shop buddy found!',recipients=onSchedule)
             msg.html = session.get('username')+' is available now!'
             mail.send(msg)
