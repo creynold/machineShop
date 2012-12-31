@@ -11,7 +11,6 @@ from contextlib import closing
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash, Response
 from flask_mail import Mail, Message
-from uwsgidecorators import *
 from flask_openid import OpenID
 from flask_openid import COMMON_PROVIDERS
 import time 
@@ -104,16 +103,16 @@ def add_admin():
 # This function is called at midnight (local time, 5 AM heroku time). All the days
 # are shifted back one.
 #######################
-@cron(0,5,-1,-1,-1)
-def oneminute(num):
-   curSched = TimeSlot.query.all()
-   for slot in curSched:
-      if slot.day > 0:
-         slot.day = slot.day - 1
-      else:
-         db.session.delete(slot)
-   
-   db.session.commit()
+#@cron(0,5,-1,-1,-1)
+#def oneminute(num):
+#   curSched = TimeSlot.query.all()
+#   for slot in curSched:
+#      if slot.day > 0:
+#         slot.day = slot.day - 1
+#      else:
+#         db.session.delete(slot)
+#   
+#   db.session.commit()
 
 def updateCalendar():
    curSched = TimeSlot.query.all()
