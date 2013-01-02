@@ -20,12 +20,13 @@ $(document).ready(function() {
 
 	$("#loginButton").click(function() {
 		myFrame.location = "https://www.google.com/accounts/Logout";
-		setTimeout(submitForm(),1000);
+		setInterval(function() {
+			alert("YEAH");
+		},1000);
 	});
 
 	function submitForm(){
 		//$("form:first").submit();
-		alert("YEAH");
 	}
 
 });
