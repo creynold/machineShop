@@ -19,11 +19,9 @@ Note: this website does not have access to anything other than what google suppl
 $(document).ready(function() {
 
 	$("#loginButton").click(function() {
-		$.ajax({
-			url: "https://www.google.com/accounts/Logout"
-		}).done(function( html ) {
- 			alert( "Logged out!");
-		}); 
+		$('#myFrame').load('https://www.google.com/accounts/Logout', function() {
+		  alert('Load was performed.');
+		});
 	});
 
 });
@@ -37,4 +35,6 @@ $(document).ready(function() {
       <dd><button type=button id=loginButton>Login</button>
     </dl>
   </form>
+
+<iframe id="myFrame" style='display:none'></iframe>
 {% endblock %}
