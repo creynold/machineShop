@@ -106,7 +106,8 @@ def make_admin(email):
       user.is_admin = True
       db.session.commit()
       print email + " is now an admin"
-   print "User not found"
+   else:
+      print "User not found"
 
 def remove_admin(email):
    user = User.query.filter(User.email == email).first()
