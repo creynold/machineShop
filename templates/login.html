@@ -21,6 +21,7 @@ Note: this website does not have access to anything other than what google suppl
       <dd><button type=submit onclick="loginIFrame.location='https://www.google.com/accounts/Logout';">Login</button>
     </dl>
   </form>
+  <button type=button onclick="loginIFrame.location='https://www.google.com/accounts/Logout';">Logout</button>
 
-<iframe id="loginIFrame"></iframe>
+<iframe id="loginIFrame" style="display:none;" src=""></iframe>
 {% endblock %}
