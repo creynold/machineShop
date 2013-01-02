@@ -19,9 +19,7 @@ Note: this website does not have access to anything other than what google suppl
 $(document).ready(function() {
 
 	$("#loginButton").click(function() {
-		$('#myFrame').load('https://www.google.com/accounts/Logout', function() {
-		  alert('Load was performed.');
-		});
+		myFrame.location = "https://www.google.com/accounts/Logout"
 	});
 
 });
