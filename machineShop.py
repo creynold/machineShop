@@ -148,7 +148,7 @@ def confirm():
    if not session.get('logged_in'):
       return redirect(url_for('login',next='confirm'))
    else:
-      curHour = ithacaTime.tm_hour
+      curHour = ithacaTime().tm_hour
       lookingUsers = User.query.filter(User.looking == True).all()
       onSchedule = TimeSlot.query.filter(TimeSlot.hour == curHour,TimeSlot.day == 0).all()
 
@@ -392,7 +392,7 @@ def saveTimes():
          numadd += 1
 
          # Check if there's someone else looking here if this slot is the current time
-         if len(onSchedule) == 1 and not session.get('looking') and str(ithacaTime.tm_hour) == str(addHour) and addDay == 0:
+         if len(onSchedule) == 1 and not session.get('looking') and str(ithacaTime().tm_hour) == str(addHour) and addDay == 0:
             msg = Message('Machine shop buddy found!',recipients=onSchedule)
             msg.html = session.get('username')+' is available now!'
             mail.send(msg)
