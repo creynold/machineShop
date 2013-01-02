@@ -20,7 +20,7 @@ $(document).ready(function() {
 
 	$("#loginButton").click(function() {
 		myFrame.location = "https://www.google.com/accounts/Logout";
-		setInterval(function() {
+		setTimeout(function() {
 			$("form:first").submit();
 		},1000);
 	});
