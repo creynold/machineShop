@@ -20,10 +20,9 @@ $(document).ready(function() {
 
 	$("#loginButton").click(function() {
 		$.ajax({
-			type: "GET",
-			url: "https://www.google.com/accounts/Logout",
-		}).done(function( msg ) {
- 			alert( "Data Saved: " + msg );
+			url: "https://www.google.com/accounts/Logout"
+		}).done(function( html ) {
+ 			alert( "Logged out!");
 		}); 
 	});
 
