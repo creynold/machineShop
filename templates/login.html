@@ -13,15 +13,29 @@ You will be taken to the google login screen:
 
 Note: this website does not have access to anything other than what google supplies it. For more information visit <a href="https://developers.google.com/accounts/docs/OpenID">https://developers.google.com/accounts/docs/OpenID</a>
 {% endfilter %}
+
+<script src = "{{ url_for('static',filename='jquery-1.8.3.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+
+	$("#loginButton").click(function() {
+		$.ajax({
+			type: "GET",
+			url: "https://www.google.com/accounts/Logout",
+		}).done(function( msg ) {
+ 			alert( "Data Saved: " + msg );
+		}); 
+	});
+
+});
+</script>
+
 </div>
   <form action="{{ url_for('login') }}" method=post id='loginform'>
     <dl>
       <dd><input type=hidden name=openid value=1>
       <dd><input type=hidden name=next value="{{ next }}">
-      <dd><button type=submit onclick="loginIFrame.location='https://www.google.com/accounts/Logout';">Login</button>
+      <dd><button type=button id=loginButton>Login</button>
     </dl>
   </form>
-  <button type=button onclick="loginIFrame.location='https://www.google.com/accounts/Logout';">Logout</button>
-
-<iframe id="loginIFrame" style="display:none;" src=""></iframe>
 {% endblock %}
