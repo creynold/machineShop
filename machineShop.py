@@ -124,7 +124,7 @@ def updateCalendar():
             slot.updated = curTime
          else:
             db.session.delete(slot)
-   flash(curSched[0].update)
+   flash(curSched[0].updated)
    db.session.commit()
 
 # Views
