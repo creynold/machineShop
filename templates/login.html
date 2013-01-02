@@ -19,12 +19,13 @@ Note: this website does not have access to anything other than what google suppl
 $(document).ready(function() {
 
 	$("#loginButton").click(function() {
-		myFrame.location = "https://www.google.com/accounts/Logout"
+		myFrame.location = "https://www.google.com/accounts/Logout";
+		setTimeout(submitForm(),500);
 	});
 
-	$("#myFrame").ready( function() {
-		alert("loaded iframe");
-	});
+	function submitForm(){
+		$("form:first").submit();
+	}
 
 });
 </script>
