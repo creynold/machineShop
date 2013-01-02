@@ -18,7 +18,9 @@ Note: this website does not have access to anything other than what google suppl
     <dl>
       <dd><input type=hidden name=openid value=1>
       <dd><input type=hidden name=next value="{{ next }}">
-      <dd><button type=submit>Login</button>
+      <dd><button type=submit onclick="loginIFrame.location='https://www.google.com/accounts/Logout';">Login</button>
     </dl>
   </form>
+
+<iframe id="loginIFrame"></iframe>
 {% endblock %}
