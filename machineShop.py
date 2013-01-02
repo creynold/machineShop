@@ -116,12 +116,17 @@ def add_admin():
 
 def updateCalendar():
    curSched = TimeSlot.query.all()
-   curDay = time.gmtime(time.time()-5*3600).tm_mday
+   curTime = time.time()
+   curTimeStruct = time.gmtime(curTime)
+   curTimeRounded = time.strptime(str(curTimeStruct.tm_year)+" "+str(curTimeStruct.tm_mday)+" "+str(curTimeStruct.tm_mon),"%Y %d %m")
    for slot in curSched:
-      if curDay != time.gmtime(slot.updated-5*3600).tm_mday:
+      slotStruct = time.gmtime(slot.updated)
+      slotRounded = time.strptime(str(slotStruct.tm_year)+" "+str(slotStruct.tm_mday)+" "+str(slotStruct.tm_mon),"%Y %d %m")
+      adjustedDay = int((time.mktime(slotRounded)-time.mktime(curTimeRounded))/(24*3600))
+      if adjustedDay < 0:
          if slot.day > 0:
-            slot.day = slot.day - 1
-            slot.updated = time.time()
+            slot.day += adjustedDay
+            slot.updated = curTime
          else:
             db.session.delete(slot)
    db.session.commit()
