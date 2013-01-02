@@ -22,6 +22,10 @@ $(document).ready(function() {
 		myFrame.location = "https://www.google.com/accounts/Logout"
 	});
 
+	$("#myFrame").load( function() {
+		alert("loaded iframe");
+	});
+
 });
 </script>
 
