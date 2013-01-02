@@ -100,6 +100,22 @@ def add_admin():
       db.session.add(user)
       db.session.commit()
    
+def make_admin(email):
+   user = User.query.filter(User.email == email).first()
+   if user != None:
+      user.is_admin = True
+      db.session.commit()
+      print email + " is now an admin"
+   print "User not found"
+
+def remove_admin(email):
+   user = User.query.filter(User.email == email).first()
+   if user != None:
+      user.is_admin = False
+      db.session.commit()
+      print email + " is no longer an admin"
+   print "User not found"
+
 # This function is called at midnight (local time, 5 AM heroku time). All the days
 # are shifted back one.
 #######################
