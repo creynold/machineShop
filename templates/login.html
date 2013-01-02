@@ -21,14 +21,9 @@ $(document).ready(function() {
 	$("#loginButton").click(function() {
 		myFrame.location = "https://www.google.com/accounts/Logout";
 		setInterval(function() {
-			alert("YEAH");
+			$("form:first").submit();
 		},1000);
 	});
-
-	function submitForm(){
-		//$("form:first").submit();
-	}
-
 });
 </script>
 
