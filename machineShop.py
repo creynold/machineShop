@@ -190,7 +190,7 @@ def confirm():
 
          for user in lookingUsers:
             user.looking = False
-            if TimeSlot.query.filter(TimeSlot.email == user.email, TimeSlot.day==0, TimeSlot.hour == curHour).first() != None:
+            if TimeSlot.query.filter(TimeSlot.email == user.email, TimeSlot.day==0, TimeSlot.hour == curHour).first() == None:
                db.session.add(TimeSlot(user.email,0,curHour,time.time()))
  
          # Write to database
